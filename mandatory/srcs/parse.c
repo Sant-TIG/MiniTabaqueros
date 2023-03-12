@@ -1,6 +1,64 @@
 #include "../incs/minishell.h"
 
-char	*ft_delete_quotes(char *str)
+char	*ft_delete_spaces(char *str)
+{
+	int	i;
+	int	j;
+
+	i = -1;
+	j = 0;
+	//printf("%s\n", str);
+	while (str[++i])
+	{
+		if (str[i] == 34)
+		{
+			str[j] = str[i];
+			j++;
+			i++;
+			while (str[i] && str[i] != 34)
+			{
+				str[j] = str[i];
+				i++;
+				j++;
+			}
+		}
+		if (str[i] == 39)
+		{
+			str[j] = str[i];
+			j++;
+			i++;
+			while (str[i] && str[i] != 39)
+			{
+				str[j] = str[i];
+				i++;
+				j++;
+			}
+		}
+		while (str[i] == 32 && str[i + 1] == 32)
+			i++;
+		str[j] = str[i];
+		j++;
+	}
+	str[j] = '\0';
+	return (str);
+}
+
+static char	*ft_find_del(char *str, int quote, int *i, int *j)
+{
+	if (str[*i] == quote)
+	{
+		++(*i);
+		while (str[*i] && str[(*i)] != quote)
+		{
+			str[*j] = str[*i];
+			(*j)++;
+			(*i)++;
+		}
+	}
+	return (str);
+}
+
+char 	*ft_delete_quotes(char *str)
 {
 	int	i;
 	int	j;
@@ -9,27 +67,9 @@ char	*ft_delete_quotes(char *str)
 	j = 0;
 	while (str[++i])
 	{
-		if (str[i] == 34)
-		{
-			i++;
-			while (str[i] != 34)
-			{
-				str[j] = str[i];
-				i++;
-				j++;
-			}
-		}
-		else if (str[i] == 39)
-		{
-			i++;
-			while (str[i] != 39)
-			{
-				str[j] = str[i];
-				i++;
-				j++;
-			}
-		}
-		else
+		ft_find_del(str, 34, &i, &j);
+		ft_find_del(str, 39, &i, &j);
+		if (str[i] != 34 && str[i] != 39)
 		{
 			str[j]  = str[i];
 			j++;

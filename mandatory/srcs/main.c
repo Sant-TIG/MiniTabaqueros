@@ -3,11 +3,24 @@
 static void	ft_process_next_line(t_mini *minishell)
 {
 	/* Checkea que las comillas esten chapadas */
+	int	i;
+
+	i = -1;
 	if (ft_parse_quotes((const char *)minishell->next_line))
 	{
-		
+//		printf("next_line sin split = %s\n", minishell->next_line);
+		minishell->next_line_split = ft_split(minishell->next_line, ' ');
+		//ft_print2dstr(minishell->next_line_split);
+		//*printf("%zu\n", ft_2dstrlen((const char **)minishell->next_line_split));
+		while (minishell->next_line_split[++i])
+		{
+			ft_delete_spaces(minishell->next_line_split[i]);
+			ft_delete_quotes(minishell->next_line_split[i]);
+		}
+		ft_builts(minishell);
 	}
-	printf("Quotes error.\n");
+	else
+		printf("Quotes error.\n");
 }
 
 static void ft_init(t_mini *minishell, const char **env)
@@ -26,9 +39,8 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 	if (argc == 1)
 	{
-		ft_init(&minishell, envp);
+		ft_init(&minishell, (const char **)envp);
 		/* Comprobar si van dentro o fuera del bucle */
-		/* INVESTIGAR SEÑALES */
 		signal(SIGINT, ft_signal_handler);
 		signal(SIGQUIT, ft_signal_handler);
 		while (1)
