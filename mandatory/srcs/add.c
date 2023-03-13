@@ -56,25 +56,14 @@ static char **ft_process_string(char **dest, const char *str, char c)
 	i = 0;
 	j = -1;
 	start = 0;
-	//printf("str del split = %s\n", str);
 	while (str[i])
 	{
-		//printf("ha entrado\n");
-		/* Primero comprueba si empieza por comillas */
 		if (str[i] == 34 || str[i] == 39)
 		{
-			/* Identifica que comilla ha encontrado*/
 			if (str[i] == 34)
 			{
-				/* Ahora recorrremos la cadena hasta que encuentre la siguiente comilla y 
-				el siguiente caracter a esta sea espacio o fin de cadena. Mientras no cumpla
-				con ambas condiciones seguira recorriendo la cadena. Como anteriormente a esto ya hemos
-				comprobado que  todas las comillas delimitantes tienen pareja, realmente no nos preocupa
-				no encontrarla por que va a estar */
 				while (str[++i])
 				{
-					/* Si encuentra su pareja de comillas toca examinar si su siguiente caracter es un espacio,
-					un caracter nulo, o si sigue habiendo contenido */
 					if (str[i] == 34)
 					{
 						while (str[i] != ' ' && str[i])
@@ -86,40 +75,44 @@ static char **ft_process_string(char **dest, const char *str, char c)
 			}
 			else
 			{
-				i++;
-				while (str[i])
+				while (str[++i])
 				{
-					i++;
 					if (str[i] == 39)
 					{
+						while (str[i] != ' ' && str[i])
+							i++;
 						dest[++j] = ft_splitdup(str, start, i + 1);
 						break;
 					}
 				}
 			}
-			i++;
-			start = i;
+			i++;//ando dudoso
+			start = i;//ando dudoso
 		}
 		else
 		{
-			while (str[i] != c && str[i])
+			while (str[i])
 			{
-				i++;
 				if (str[i] == 34)
 				{
 					i++;
-					while (str[i] && str[i] != 34)
-						i++;
-					if (str[i + 1] == c)
+					while (str[i])
 					{
-						dest[++j] = ft_splitdup(str, start, i + 1);
-						break;			
-					}
-					while (str[i] && str[i] != c)
+						if (str[i] == 34)
+						{
+							while (str[i] != c && str[i])
+								i++;
+							dest[++j] = ft_splitdup(str, start, i + 1);
+							//printf("dest = %s\n", dest[j]);
+							//printf("cadena restante = %s\n", &str[i]);
+							break;
+						}
 						i++;
-					dest[++j] = ft_splitdup(str, start, i);
+					}
+					start = i;
+					//printf("cadena start = %s\n", &str[start]);
 				}
-				else if (str[i] == 39)
+				/*else if (str[i] == 39)
 				{
 					i++;
 					while (str[i] && str[i] != 39)
@@ -132,78 +125,77 @@ static char **ft_process_string(char **dest, const char *str, char c)
 					while (str[i] && str[i] != c)
 						i++;
 					dest[++j] = ft_splitdup(str, start, i);
+				}*/
+				if (str[i] != c)
+				{
+					//printf("la cadena que le llega a esta mierda %s\n\n", &str[i]);
+					//printf("cadena start = %s\n", &str[start]);
 				}
-				else if (str[i] == c || i == ft_strlen(str))
-					dest[++j] = ft_splitdup(str, start, i);
-				
-			}
-			while (str[i] == c && str[i])
-			{
+				while (str[i] == c && str[i + 1] == c && str[i])
+				{
+					i++;
+					start = i;
+				}
 				i++;
-				start = i;
-			}			
+			}
+
 		}
+		while (str[i] == c && str[i])
+		{
+			i++;
+			start = i;
+		}	
 	}
 	dest[++j] = NULL;
 	//printf("%s\n", dest[j]);
 	return (dest);
 }
 
-static void ft_split_quotes(const char **str, int *count, char c)
+static void ft_process_quote(const char *str, int *i, char quote)
 {
-	//printf("\nSPLIT QUOTES\n");
-	(*count)++;
-	if (*(*str)== 34)
-	{
-		(*str)++;
-			while (*(*str)&& *(*str)!= 34)
-			(*str)++;
-	}
-	else
-	{
-		(*str)++;
-		while (*(*str)&& *(*str)!= 39)
-			(*str)++;
-	}
-	(*str)++;
-	while (*(*str) && *(*str) != c)
-		(*str)++;
+	(*i)++;
+	while (str[*i] && str[*i] != quote)
+		(*i)++;
+	(*i)++;
 }
 
-static size_t ft_line_counter(const char *str, char c)
+static int	ft_process_quotes(const char *str, int *i, char c)
 {
-	//printf("\nLINE COUNTER\n");
-	int count;
+	if (str[*i] == 34 || str[*i] == 39)
+	{
+		ft_process_quote(str, i, str[*i]);
+		while (str[*i] && str[*i] != c)
+			(*i)++;
+		return (1);
+	}
+	return (0);
+}
+
+static size_t	ft_line_counter(const char *str, char c)
+{
+	int	count;
+	int	i;
 
 	count = 0;
-	while (*str == c && *str)
-		str++;
-	while (*str)
+	i = 0;
+	if (!str)
+		return (0);
+	while (str[i])
 	{
-		if (*str == 34 || *str == 39)
-			ft_split_quotes(&str, &count, c);
-		else
+		while (str[i] && str[i] == c)
+			i++;
+		if (str[i])
 		{
-			while (*str && *str != c)
+			if (!ft_process_quotes(str, &i, c))
 			{
-				if (*str == 34)
+				while (str[i] && str[i] != c)
 				{
-					str++;
-					while (*str && *str != 34)
-						str++;
+					ft_process_quotes(str, &i, c);
+					i++;
 				}
-				else if (*str == 39)
-				{
-					str++;
-					while (*str && *str != 39)
-						str++;
-				}
-				str++;	
 			}
 			count++;
-		}
-		while (*str && *str == c)
-			str++;
+		}		
 	}
 	return (count);
 }

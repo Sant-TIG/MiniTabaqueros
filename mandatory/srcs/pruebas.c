@@ -2,6 +2,17 @@
 
 static char **ft_process_string(char **dest, const char *str, char c)
 {
+	while
+}
+
+
+
+
+
+
+
+static char **ft_process_string(char **dest, const char *str, char c)
+{
 	printf("\nPROCESS STRING\n");
 	size_t i;
 	size_t j;
@@ -107,4 +118,76 @@ static char **ft_process_string(char **dest, const char *str, char c)
 int main(int argc, char **argv, char **envp)
 {
 	
+}
+
+		while (*str && *str == c)
+			str++;
+
+		while (str[i] == c && str[i])
+		{
+			i++;
+			start = i;
+		}
+
+static size_t	ft_line_counter(const char *str, char c)
+{
+	int	count;
+	int	i;
+
+	count = 0;
+	i = 0;
+	if (!str)
+		return (0);
+	while (str[i] && str[i] == c)
+		i++;
+	while (str[i])
+	{
+		if (str[i] == 34 || str[i] == 39)
+		{
+			if (str[i] == 34)
+			{
+				i++;
+				while (str[i] && str[i] != 34)
+					i++;
+			}
+			else if (str[i] == 39)
+			{
+				i++;
+				while (str[i] && str[i] != 39)
+					i++;
+			}
+			i++;
+			while (str[i] && str[i] != c)
+				i++;
+			
+		}
+		else
+		{
+			while (str[i] && str[i] != c)
+			{
+				if (str[i] == 34 || str[i] == 39)
+				{
+					if (str[i] == 34)
+					{
+						i++;
+						while (str[i] && str[i] != 34)
+							i++;
+					}
+					else if (str[i] == 39)
+					{
+						i++;
+						while (str[i] && str[i] != 39)
+							i++;
+					}
+					i++;
+					while (str[i] && str[i] != c)
+						i++;
+					
+				}
+				i++;
+			}
+		}
+		count++;
+		i++;
+	}
 }
