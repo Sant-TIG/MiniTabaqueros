@@ -48,9 +48,9 @@ static void	ft_process_quotes(t_mini *minishell)
 void    ft_builts(t_mini *minishell)
 {
 	//printf("\nBuilst\n");
-	int     i;
+	//int     i;
 
-	i = 0;
+	//i = 0;
 	ft_process_quotes(minishell);
 	if (ft_str_equals(minishell->next_line_split[0], "env"))
 		ft_print2dstr(minishell->mini_env);

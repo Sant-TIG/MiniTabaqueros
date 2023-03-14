@@ -4,10 +4,6 @@ M = mandatory/
 
 NAME = minishell
 
-READLINE_DIR = ${HOME}/.brew/opt/readline
-F_READLINE = -I$(READLINE_DIR)/include
-COMPILE = -lreadline -L$(READLINE_DIR)/lib
-
 SRCS = $M$Smain.c\
 	   $M$Scopy.c\
 	   $M$Sfree.c\
@@ -56,13 +52,13 @@ $M$O:
 $(OBJS): | $M$O
 
 $(OBJS): $M$O%.o: $M$S%.c
-	$(CC) $(CFLAGS) $(F_READLINE) -g3 -c $< -o $@
+	$(CC) $(CFLAGS) $(shell pkg-config --cflags readline) -g3 -c $< -o $@
 
 $(NAME): $(OBJS)
 	@echo "Objects successfully created"
 	@echo "Compiling mandatory...."
-	$(CC) $(CFLAGS) $(SANITIZE) $(COMPILE) -g3 $^ -o $(NAME)
-#	$(CC) $(CFLAGS) $(COMPILE) -g3 $^ -o $(NAME)
+#	$(CC) $(CFLAGS) $(SANITIZE) $(COMPILE) -g3 $^ -o $(NAME)
+	$(CC) $(CFLAGS) $(SANITIZE) $(shell pkg-config --cflags readline) -g3 $^ -o $(NAME) -lreadline
 	@echo "Mandatory compiled"
 
 clean:

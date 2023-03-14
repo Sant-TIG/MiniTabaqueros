@@ -32,7 +32,6 @@ char	*ft_join_chr(char *str, int c)
  */
 static char *ft_splitdup(const char *s, size_t start, size_t finish)
 {
-	//printf("\nJOIN CHR\n");
 	char *dest;
 	size_t i;
 
@@ -46,117 +45,58 @@ static char *ft_splitdup(const char *s, size_t start, size_t finish)
 	return (dest);
 }
 
-static char **ft_process_string(char **dest, const char *str, char c)
-{
-	printf("\nPROCESS STRING\n");
-	size_t i;
-	size_t j;
-	size_t start;
-
-	i = 0;
-	j = -1;
-	start = 0;
-	while (str[i])
-	{
-		if (str[i] == 34 || str[i] == 39)
-		{
-			if (str[i] == 34)
-			{
-				while (str[++i])
-				{
-					if (str[i] == 34)
-					{
-						while (str[i] != ' ' && str[i])
-							i++;
-						dest[++j] = ft_splitdup(str, start, i + 1);
-						break;
-					}
-				}
-			}
-			else
-			{
-				while (str[++i])
-				{
-					if (str[i] == 39)
-					{
-						while (str[i] != ' ' && str[i])
-							i++;
-						dest[++j] = ft_splitdup(str, start, i + 1);
-						break;
-					}
-				}
-			}
-			i++;//ando dudoso
-			start = i;//ando dudoso
-		}
-		else
-		{
-			while (str[i])
-			{
-				if (str[i] == 34)
-				{
-					i++;
-					while (str[i])
-					{
-						if (str[i] == 34)
-						{
-							while (str[i] != c && str[i])
-								i++;
-							dest[++j] = ft_splitdup(str, start, i + 1);
-							//printf("dest = %s\n", dest[j]);
-							//printf("cadena restante = %s\n", &str[i]);
-							break;
-						}
-						i++;
-					}
-					start = i;
-					//printf("cadena start = %s\n", &str[start]);
-				}
-				/*else if (str[i] == 39)
-				{
-					i++;
-					while (str[i] && str[i] != 39)
-						i++;
-					if (str[i + 1] == c)
-					{
-						dest[++j] = ft_splitdup(str, start, i + 1);
-						break;			
-					}
-					while (str[i] && str[i] != c)
-						i++;
-					dest[++j] = ft_splitdup(str, start, i);
-				}*/
-				if (str[i] != c)
-				{
-					//printf("la cadena que le llega a esta mierda %s\n\n", &str[i]);
-					//printf("cadena start = %s\n", &str[start]);
-				}
-				while (str[i] == c && str[i + 1] == c && str[i])
-				{
-					i++;
-					start = i;
-				}
-				i++;
-			}
-
-		}
-		while (str[i] == c && str[i])
-		{
-			i++;
-			start = i;
-		}	
-	}
-	dest[++j] = NULL;
-	//printf("%s\n", dest[j]);
-	return (dest);
-}
-
 static void ft_process_quote(const char *str, int *i, char quote)
 {
 	(*i)++;
 	while (str[*i] && str[*i] != quote)
 		(*i)++;
 	(*i)++;
+}
+
+static char **ft_process_string(char **dest, const char *str, char c)
+{
+	printf("\nPROCESS STRING\n");
+	int	i;
+	int	j;
+	int	start;
+
+	i = 0;
+	j = -1;
+	start = 0;
+	printf("str = %s\n", str);
+	while (str[i])
+	{
+		if (str[i] == c)
+		{
+			printf("Encuentra espacio\n");
+			while (str[i] && str[i] == c)
+			{
+				i++;
+				start = i;
+			}
+		}
+		else if (str[i])
+		{
+			//printf("cadena antes de revisar = %s\n", &str[i]);
+			if (str[i] && (str[i] == 34 || str[i] == 39))
+				ft_process_quote(str, &i, str[i]);
+			if (str[i] && str[i] != c)
+			{
+				printf("Entra en caracter\n");
+				while (str[i] && str[i] != c && str[i] != 34 && str[i] != 39)
+					i++;
+			}
+			if (!str[i] || str[i] == c)
+			{
+				//printf("Entra a copiar con %s como inicio y %s como final\n", &str[start], &str[i]);
+				dest[++j] = ft_splitdup(str, start, i);
+				printf("Despues de cpiar = %s\n", dest[j]);
+				start = i;
+			}
+		}
+	}
+	dest[++j] = NULL;
+	return (dest);
 }
 
 static int	ft_process_quotes(const char *str, int *i, char c)
@@ -211,6 +151,7 @@ char **ft_split(const char *str, char c)
 	if (!dest)
 		return (NULL);
 	ft_process_string(dest, str, c);
+	printf("Despues de haber copiado todo\n");
 	ft_print2dstr(dest);
 	printf("\n");
 	return (dest);
