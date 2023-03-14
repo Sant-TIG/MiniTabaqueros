@@ -18,7 +18,7 @@ char	*ft_substr(const char *str, unsigned int start, size_t len)
 	return (dst);	
 }
 
- char	*ft_strtrim(const char *str, char const *set)
+char	*ft_strtrim(const char *str, char const *set)
 {
 	//printf("\STRTRIM\n");
 	size_t	end;
